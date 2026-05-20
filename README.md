@@ -12,25 +12,34 @@ The plugin works without the pack — items just render as their base item (e.g.
 docs/resource-pack/
 ├── pack.mcmeta
 ├── scripts/
-│   └── generate_glyphs.py             # regenerates the font glyph PNGs
+│   ├── generate_glyphs.py            # regenerates the font glyph PNGs
+│   └── generate_icons.py             # regenerates the 16x16 menu icon PNGs
 └── assets/
     └── diverge/
-        ├── items/
-        │   └── life_orb.json          # NEW (1.21.4+): client item definition;
-        │                              # this is what setItemModel resolves to
+        ├── items/                    # client item definitions (1.21.4+)
+        │   ├── life_orb.json
+        │   ├── menu_lifetime.json
+        │   ├── menu_next_rank.json
+        │   └── category_*.json       # one per ChallengeCategory except
+        │                             #   MINING (uses vanilla DIAMOND_PICKAXE)
         ├── models/
-        │   └── item/
-        │       └── life_orb.json      # plain model (parent + textures);
-        │                              # referenced from items/life_orb.json
+        │   └── item/                 # plain model JSONs (parent + textures)
+        │       ├── life_orb.json
+        │       ├── menu_lifetime.json
+        │       ├── menu_next_rank.json
+        │       └── category_*.json
         ├── font/
-        │   └── default.json           # PUA codepoint → glyph PNG mapping;
-        │                              # consumed by <font:diverge:default>
+        │   └── default.json          # PUA codepoint → glyph PNG mapping;
+        │                             # consumed by <font:diverge:default>
         └── textures/
-            ├── item/
-            │   └── life_orb.png       # the texture (any power-of-two resolution)
+            ├── item/                 # 16×16 pixel-art item textures
+            │   ├── life_orb.png
+            │   ├── menu_lifetime.png      (gold/blue hourglass)
+            │   ├── menu_next_rank.png     (aqua chevrons)
+            │   └── category_*.png         (pickaxe, wheat, swords, …)
             └── font/
-                └── glyph/
-                    ├── lifetime.png   # 8×8 white-on-transparent pixel art
+                └── glyph/            # 8×8 white-on-transparent font glyphs
+                    ├── lifetime.png
                     ├── rank.png
                     ├── arrow.png
                     ├── crown.png
@@ -77,11 +86,11 @@ If you ever need to switch hosts:
 
 ## Wiring `server.properties`
 
-Current production values (v0.3.0, MC 26.1.x):
+Current production values (v0.4.2, MC 26.1.x):
 
 ```properties
-resource-pack=https://github.com/Cooper-AmplioDev/diverge-resource-pack/releases/download/v0.3.0/diverge-resource-pack-v0.3.0.zip
-resource-pack-sha1=f954dc41306021711a9cd33f1e5f318357076ef9
+resource-pack=https://github.com/Cooper-AmplioDev/diverge-resource-pack/releases/download/v0.4.2/diverge-resource-pack-v0.4.2.zip
+resource-pack-sha1=7c7070c7e12e576bb4d232622dd5901e6c7286f0
 resource-pack-prompt={"text":"Diverge custom items + UI"}
 require-resource-pack=true
 ```

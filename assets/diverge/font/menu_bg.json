@@ -1,0 +1,55 @@
+{
+  "_comment_purpose": "Chest GUI background overlay font. The plugin's MenuTitleDecorator prepends a 3-character sandwich to every chest menu title — a -8px space (shift left to the panel origin), a row-count-specific bitmap glyph (paints the full-size chest panel PNG), and a -169px space (return cursor to the vanilla title position). Vanilla chests and other plugins' inventories are unaffected because they don't use this font.",
+  "_comment_codepoints": "U+E100..U+E101 are the negative-space glyphs (panel-origin shift + title-restore). U+E110..U+E115 are the chest-background bitmaps, one per row count 1..6. Heights are the exact vanilla chest UI heights so the bitmap covers the whole panel edge to edge; ascent=13 puts the bitmap's top at y=0 of the chest (baseline at y=13 minus ascent of 13).",
+  "providers": [
+    {
+      "type": "space",
+      "advances": {
+        "\uE100": -8,
+        "\uE101": -169
+      }
+    },
+    {
+      "type": "bitmap",
+      "file": "diverge:gui/menu_1row.png",
+      "ascent": 13,
+      "height": 131,
+      "chars": ["\uE110"]
+    },
+    {
+      "type": "bitmap",
+      "file": "diverge:gui/menu_2row.png",
+      "ascent": 13,
+      "height": 149,
+      "chars": ["\uE111"]
+    },
+    {
+      "type": "bitmap",
+      "file": "diverge:gui/menu_3row.png",
+      "ascent": 13,
+      "height": 167,
+      "chars": ["\uE112"]
+    },
+    {
+      "type": "bitmap",
+      "file": "diverge:gui/menu_4row.png",
+      "ascent": 13,
+      "height": 185,
+      "chars": ["\uE113"]
+    },
+    {
+      "type": "bitmap",
+      "file": "diverge:gui/menu_5row.png",
+      "ascent": 13,
+      "height": 203,
+      "chars": ["\uE114"]
+    },
+    {
+      "type": "bitmap",
+      "file": "diverge:gui/menu_6row.png",
+      "ascent": 13,
+      "height": 222,
+      "chars": ["\uE115"]
+    }
+  ]
+}
