@@ -1,0 +1,10 @@
+{
+  "pack": {
+    "description": "Diverge custom items resource pack",
+    "pack_format": 46,
+    "supported_formats": {
+      "min_inclusive": 32,
+      "max_inclusive": 100
+    }
+  }
+}
