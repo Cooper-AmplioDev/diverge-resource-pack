@@ -1,0 +1,60 @@
+{
+  "providers": [
+    {
+      "type": "bitmap",
+      "file": "diverge:font/glyph/lifetime.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE001"]
+    },
+    {
+      "type": "bitmap",
+      "file": "diverge:font/glyph/rank.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE002"]
+    },
+    {
+      "type": "bitmap",
+      "file": "diverge:font/glyph/arrow.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE003"]
+    },
+    {
+      "type": "bitmap",
+      "file": "diverge:font/glyph/crown.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE004"]
+    },
+    {
+      "type": "bitmap",
+      "file": "diverge:font/glyph/check.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE005"]
+    },
+    {
+      "type": "bitmap",
+      "file": "diverge:font/glyph/ring.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE006"]
+    },
+    {
+      "type": "bitmap",
+      "file": "diverge:font/glyph/ornament_left.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE020"]
+    },
+    {
+      "type": "bitmap",
+      "file": "diverge:font/glyph/ornament_right.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": ["\uE021"]
+    }
+  ]
+}
