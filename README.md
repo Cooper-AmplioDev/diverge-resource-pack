@@ -11,18 +11,33 @@ The plugin works without the pack — items just render as their base item (e.g.
 ```
 docs/resource-pack/
 ├── pack.mcmeta
+├── scripts/
+│   └── generate_glyphs.py             # regenerates the font glyph PNGs
 └── assets/
     └── diverge/
         ├── items/
-        │   └── life_orb.json         # NEW (1.21.4+): client item definition;
-        │                             # this is what setItemModel resolves to
+        │   └── life_orb.json          # NEW (1.21.4+): client item definition;
+        │                              # this is what setItemModel resolves to
         ├── models/
         │   └── item/
-        │       └── life_orb.json     # plain model (parent + textures);
-        │                             # referenced from items/life_orb.json
+        │       └── life_orb.json      # plain model (parent + textures);
+        │                              # referenced from items/life_orb.json
+        ├── font/
+        │   └── default.json           # PUA codepoint → glyph PNG mapping;
+        │                              # consumed by <font:diverge:default>
         └── textures/
-            └── item/
-                └── life_orb.png      # the texture (any power-of-two resolution)
+            ├── item/
+            │   └── life_orb.png       # the texture (any power-of-two resolution)
+            └── font/
+                └── glyph/
+                    ├── lifetime.png   # 8×8 white-on-transparent pixel art
+                    ├── rank.png
+                    ├── arrow.png
+                    ├── crown.png
+                    ├── check.png
+                    ├── ring.png
+                    ├── ornament_left.png
+                    └── ornament_right.png
 ```
 
 The two-file split (`items/` + `models/item/`) is the post-1.21.4 layout. Server-side, the plugin calls `ItemMeta.setItemModel(NamespacedKey("diverge", "life_orb"))`. The client looks for that identifier at `assets/diverge/items/life_orb.json` — the *items* file. That items file then points at the plain model in `assets/diverge/models/item/life_orb.json`, which carries the texture references like before.
@@ -62,14 +77,19 @@ If you ever need to switch hosts:
 
 ## Wiring `server.properties`
 
-Current production values (v0.1.0):
+Current production values (v0.3.0, MC 26.1.x):
 
 ```properties
-resource-pack=https://github.com/Cooper-AmplioDev/diverge-resource-pack/releases/download/v0.1.0/diverge-resource-pack-v0.1.0.zip
-resource-pack-sha1=5d6a871bab3d75ae6f1bbee9b416cdd3a74c49d5
-resource-pack-prompt=Diverge custom items
+resource-pack=https://github.com/Cooper-AmplioDev/diverge-resource-pack/releases/download/v0.3.0/diverge-resource-pack-v0.3.0.zip
+resource-pack-sha1=f954dc41306021711a9cd33f1e5f318357076ef9
+resource-pack-prompt={"text":"Diverge custom items + UI"}
 require-resource-pack=true
 ```
+
+A few non-obvious gotchas to remember:
+
+- `resource-pack-prompt` must be a JSON text component on MC 26.1+ (a JSON object like `{"text":"..."}`, or a quoted JSON string). A bare string crashes Paper's `StrictJsonParser` at boot — the resource-pack-prompt field gets silently dropped, but the stack trace shows up in `latest.log`.
+- The `pack_format` in `pack.mcmeta` must match the running MC version's `resource_major` from the server jar's `version.json`. v0.2.0 ships `pack_format: 84` for MC 26.1; bump it in lockstep with future MC upgrades.
 
 - `require-resource-pack=true` boots players who refuse the pack. Recommended for a survival server where custom items meaningfully affect gameplay (otherwise they'd see Life Orbs as plain hearts of the sea and not know what's going on).
 - `resource-pack-prompt` is the message shown in the accept-pack dialog. Supports MiniMessage in Paper.
@@ -114,3 +134,24 @@ If a future MC version genuinely breaks the schema (new model format, new textur
    itemMeta.setItemModel(NamespacedKey("diverge", "<name>"))
    ```
 4. Rebuild + re-host the pack.
+
+## Adding a custom font glyph
+
+The Diverge font lives at `assets/diverge/font/default.json`. Plugin-side
+text wraps individual codepoints with `<font:diverge:default>…</font>`
+(or uses the `Glyphs` helpers in `survival/.../font/Glyphs.kt`) to
+render them as the bound PNG.
+
+1. Pick an unused PUA codepoint. Ranges in use today:
+   - `U+E000..U+E01F` — inline content icons (lifetime, rank, arrow…)
+   - `U+E020..U+E03F` — decorations / bookends
+   - `U+E040..U+E0FF` — reserved for icon expansion
+   - `U+E100..U+E1FF` — reserved for future glyph-based UI shifters
+2. Add an entry to `scripts/generate_glyphs.py`'s `GLYPHS` dict —
+   an 8×8 ASCII grid with `X` for opaque white, `.` for transparent.
+3. Re-run `python3 scripts/generate_glyphs.py` to produce the PNG.
+4. Add a provider entry to `assets/diverge/font/default.json` mapping
+   the codepoint to the new texture (use `ascent: 7`, `height: 8` to
+   share the baseline with default text).
+5. Mirror the codepoint into `com.diverge.survival.font.Glyphs` as a
+   `const val` and rebuild the pack zip + plugin.
