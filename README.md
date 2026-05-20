@@ -81,9 +81,23 @@ The plugin's `MenuTitleDecorator` wraps every menu title with this
 sandwich. Other plugins' chests + vanilla chests are unaffected because
 they don't use this font.
 
-To re-skin the panels, edit `scripts/generate_menu_bg.py` (paint only
-in the documented "safe zones" so vanilla slot squares stay visible)
-and re-run the generator.
+To re-skin the panels, edit `scripts/generate_menu_bg.py` and re-run
+the generator. As of v0.5.1 the PNGs are **fully opaque** — they
+completely cover the vanilla chest texture, including every slot
+square. The generator draws custom recessed wells at the exact vanilla
+slot coordinates so item sprites continue to render inside their tray
+without any plugin-side alignment math.
+
+## Hiding the "Inventory" label
+
+Every vanilla chest GUI draws an `Inventory` label between the
+container slots and the player's inventory at a fixed position the
+server cannot move or remove from code. To make Diverge menus feel
+like one cohesive panel rather than two halves with a label between
+them, `assets/minecraft/lang/en_us.json` overrides the
+`container.inventory` translation key with an empty string. That hides
+the label in every chest GUI, including vanilla chests — accepted
+trade for the server's custom feel.
 
 The two-file split (`items/` + `models/item/`) is the post-1.21.4 layout. Server-side, the plugin calls `ItemMeta.setItemModel(NamespacedKey("diverge", "life_orb"))`. The client looks for that identifier at `assets/diverge/items/life_orb.json` — the *items* file. That items file then points at the plain model in `assets/diverge/models/item/life_orb.json`, which carries the texture references like before.
 
@@ -122,11 +136,11 @@ If you ever need to switch hosts:
 
 ## Wiring `server.properties`
 
-Current production values (v0.5.0, MC 26.1.x):
+Current production values (v0.5.1, MC 26.1.x):
 
 ```properties
-resource-pack=https://github.com/Cooper-AmplioDev/diverge-resource-pack/releases/download/v0.5.0/diverge-resource-pack-v0.5.0.zip
-resource-pack-sha1=6fe03c1ad86445db268d89ead9cf7e15042abaa9
+resource-pack=https://github.com/Cooper-AmplioDev/diverge-resource-pack/releases/download/v0.5.1/diverge-resource-pack-v0.5.1.zip
+resource-pack-sha1=31cb95c30b35c8b39f9775d367bae59b27bc2d86
 resource-pack-prompt={"text":"Diverge custom items + UI"}
 require-resource-pack=true
 ```
