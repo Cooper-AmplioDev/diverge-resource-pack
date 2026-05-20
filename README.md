@@ -13,7 +13,8 @@ docs/resource-pack/
 ├── pack.mcmeta
 ├── scripts/
 │   ├── generate_glyphs.py            # regenerates the font glyph PNGs
-│   └── generate_icons.py             # regenerates the 16x16 menu icon PNGs
+│   ├── generate_icons.py             # regenerates the 16x16 menu icon PNGs
+│   └── generate_menu_bg.py           # regenerates the chest panel overlays
 └── assets/
     └── diverge/
         ├── items/                    # client item definitions (1.21.4+)
@@ -29,14 +30,23 @@ docs/resource-pack/
         │       ├── menu_next_rank.json
         │       └── category_*.json
         ├── font/
-        │   └── default.json          # PUA codepoint → glyph PNG mapping;
-        │                             # consumed by <font:diverge:default>
+        │   ├── default.json          # PUA codepoint → glyph PNG mapping;
+        │   │                         # consumed by <font:diverge:default>
+        │   └── menu_bg.json          # chest GUI overlay font;
+        │                             # consumed by MenuTitleDecorator
         └── textures/
+            ├── gui/                  # 176×N chest panel overlays
+            │   ├── menu_1row.png       (131 px tall)
+            │   ├── menu_2row.png       (149 px tall)
+            │   ├── menu_3row.png       (167 px tall)
+            │   ├── menu_4row.png       (185 px tall)
+            │   ├── menu_5row.png       (203 px tall)
+            │   └── menu_6row.png       (222 px tall)
             ├── item/                 # 16×16 pixel-art item textures
             │   ├── life_orb.png
             │   ├── menu_lifetime.png      (gold/blue hourglass)
             │   ├── menu_next_rank.png     (aqua chevrons)
-            │   └── category_*.png         (pickaxe, wheat, swords, …)
+            │   └── category_*.png         (wheat, swords, …)
             └── font/
                 └── glyph/            # 8×8 white-on-transparent font glyphs
                     ├── lifetime.png
@@ -48,6 +58,32 @@ docs/resource-pack/
                     ├── ornament_left.png
                     └── ornament_right.png
 ```
+
+## Adding a chest-panel overlay
+
+Each Diverge chest menu (`/lt`, `/challenges`, etc.) renders a custom
+panel image *over* the vanilla chest GUI without affecting any other
+chest in the game. The mechanism is the `diverge:menu_bg` font in
+`assets/diverge/font/menu_bg.json`:
+
+- `U+E110..U+E115` are bitmap providers — one PNG per chest row count
+  (1..6). Each is exactly 176 px wide and as tall as the vanilla chest
+  UI for that row count (131 / 149 / 167 / 185 / 203 / 222 px).
+- `U+E100` is a `-8 px` space — shifts the cursor from the vanilla
+  title origin (x=8 inside the chest texture) to the chest panel origin
+  (x=0) so the bitmap paints flush against the left edge.
+- `U+E101` is a `-169 px` space — undoes the combined effect of the
+  shift-left and the bitmap's `+177 px` advance, returning the cursor
+  to the vanilla title position so the menu's actual title text renders
+  in its normal place.
+
+The plugin's `MenuTitleDecorator` wraps every menu title with this
+sandwich. Other plugins' chests + vanilla chests are unaffected because
+they don't use this font.
+
+To re-skin the panels, edit `scripts/generate_menu_bg.py` (paint only
+in the documented "safe zones" so vanilla slot squares stay visible)
+and re-run the generator.
 
 The two-file split (`items/` + `models/item/`) is the post-1.21.4 layout. Server-side, the plugin calls `ItemMeta.setItemModel(NamespacedKey("diverge", "life_orb"))`. The client looks for that identifier at `assets/diverge/items/life_orb.json` — the *items* file. That items file then points at the plain model in `assets/diverge/models/item/life_orb.json`, which carries the texture references like before.
 
@@ -86,11 +122,11 @@ If you ever need to switch hosts:
 
 ## Wiring `server.properties`
 
-Current production values (v0.4.2, MC 26.1.x):
+Current production values (v0.5.0, MC 26.1.x):
 
 ```properties
-resource-pack=https://github.com/Cooper-AmplioDev/diverge-resource-pack/releases/download/v0.4.2/diverge-resource-pack-v0.4.2.zip
-resource-pack-sha1=7c7070c7e12e576bb4d232622dd5901e6c7286f0
+resource-pack=https://github.com/Cooper-AmplioDev/diverge-resource-pack/releases/download/v0.5.0/diverge-resource-pack-v0.5.0.zip
+resource-pack-sha1=6fe03c1ad86445db268d89ead9cf7e15042abaa9
 resource-pack-prompt={"text":"Diverge custom items + UI"}
 require-resource-pack=true
 ```
